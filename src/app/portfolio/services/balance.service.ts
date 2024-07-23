@@ -7,7 +7,7 @@ const sum = (array: Array<any>, key?: string): number =>
   array.reduce((prev, cur: any) => prev + (key ? cur[key] : cur), 0);
 
 const avg = (array: Array<any>, key?: string): number => {
-  const t = array.map(r => (key ? r[key] : r)).filter(r => r > 0);  
+  const t = array.map(r => (key ? r[key] : r)).filter(r => r > 0);
   return sum(t) / t.length;
 }
 
@@ -26,7 +26,7 @@ export class BalanceService {
 
     const current = (new Date()).getFullYear()
 
-    const d = data.balance.map(({ date }) => (new Date(date)).getFullYear()).reduce((prev: number[], cur: number) => {
+    const d = data.balance.map(r => ({ ...r, amount: (Math.random() * 50000) })).map(({ date }) => (new Date(date)).getFullYear()).reduce((prev: number[], cur: number) => {
       if (!prev.includes(cur)) {
         prev.push(cur)
       }
@@ -38,13 +38,13 @@ export class BalanceService {
 
   getAssetItems(filters: AssetsFilters) {
 
-    const d = data.balance.map((r, i) => ({ ...r, date: new Date(r.date), id: (i + 1) })).filter(({ date }) => !filters?.year || filters?.year === date.getFullYear());
+    const d = data.balance.map(r => ({ ...r, amount: (Math.random() * 50000) })).map((r, i) => ({ ...r, date: new Date(r.date), id: (i + 1) })).filter(({ date }) => !filters?.year || filters?.year === date.getFullYear());
     return of(d);
   }
 
   getBalance(filters: AssetsFilters) {
 
-    const d = data.balance.map((r, i) => ({ ...r, date: new Date(r.date), id: (i + 1) })).map(r => ({ ...r, ym: getYm(r.date) })).filter(({ date }) => !filters?.year || filters?.year === date.getFullYear())
+    const d = data.balance.map(r => ({ ...r, amount: (Math.random() * 50000) })).map((r, i) => ({ ...r, date: new Date(r.date), id: (i + 1) })).map(r => ({ ...r, ym: getYm(r.date) })).filter(({ date }) => !filters?.year || filters?.year === date.getFullYear())
     //.sort(({ ym: a }, { ym: b }) => a - b);
     const periodIds = [...new Set(d.map(({ ym }) => ym))];
     const accountIds = [...new Set(d.map(({ account }) => account.id))];
