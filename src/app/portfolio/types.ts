@@ -21,3 +21,11 @@ export interface AssetItem {
 export interface AssetsFilters {
   year?: number;
 }
+
+
+export interface GeneralData {
+  general: any;
+  periods: { ym: number, date: Date }[];
+  accounts: Account[];
+  kpi: any
+}

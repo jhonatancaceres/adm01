@@ -22,11 +22,16 @@ export class BalanceService {
 
   constructor() { }
 
+  private get balance() {
+    //return data.balance.map(r => ({ ...r, amount: (Math.random() * 50000) }))
+    return data.balance
+  }
+
   getYears(): Observable<Year[]> {
 
     const current = (new Date()).getFullYear()
 
-    const d = data.balance.map(r => ({ ...r, amount: (Math.random() * 50000) })).map(({ date }) => (new Date(date)).getFullYear()).reduce((prev: number[], cur: number) => {
+    const d = this.balance.map(({ date }) => (new Date(date)).getFullYear()).reduce((prev: number[], cur: number) => {
       if (!prev.includes(cur)) {
         prev.push(cur)
       }
@@ -38,13 +43,13 @@ export class BalanceService {
 
   getAssetItems(filters: AssetsFilters) {
 
-    const d = data.balance.map(r => ({ ...r, amount: (Math.random() * 50000) })).map((r, i) => ({ ...r, date: new Date(r.date), id: (i + 1) })).filter(({ date }) => !filters?.year || filters?.year === date.getFullYear());
+    const d = this.balance.map((r, i) => ({ ...r, date: new Date(r.date), id: (i + 1) })).filter(({ date }) => !filters?.year || filters?.year === date.getFullYear());
     return of(d);
   }
 
   getBalance(filters: AssetsFilters) {
 
-    const d = data.balance.map(r => ({ ...r, amount: (Math.random() * 50000) })).map((r, i) => ({ ...r, date: new Date(r.date), id: (i + 1) })).map(r => ({ ...r, ym: getYm(r.date) })).filter(({ date }) => !filters?.year || filters?.year === date.getFullYear())
+    const d = this.balance.map((r, i) => ({ ...r, date: new Date(r.date), id: (i + 1) })).map(r => ({ ...r, ym: getYm(r.date) })).filter(({ date }) => !filters?.year || filters?.year === date.getFullYear())
     //.sort(({ ym: a }, { ym: b }) => a - b);
     const periodIds = [...new Set(d.map(({ ym }) => ym))];
     const accountIds = [...new Set(d.map(({ account }) => account.id))];
@@ -79,8 +84,7 @@ export class BalanceService {
 
     const kpi: { [key: string]: number } = ['diff', 'incomes', 'expenses'].reduce((prev, kpi) => ({
       ...prev, [kpi]: { avg: avg(periods.map(({ ym }) => general[ym][kpi].amount)) }
-    }), {});
-    console.log(kpi)
+    }), {});    
 
     return of({ accounts, periods, general, kpi });
   }
